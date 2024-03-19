@@ -1,1 +1,1 @@
-# Battleships---ReactNative-
+# Battleships game implementation using React Native 
