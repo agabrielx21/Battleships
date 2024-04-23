@@ -21,19 +21,21 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const alert = () =>
-        Alert.alert('Login status', 'Login with success');
-
     return (
         <Container>
-            <Input onChangeText={setEmail} keyboardType={'email-address'} ></Input>
-            <Input onChangeText={setPassword} secureTextEntry ></Input>
-            <Button title={"Login"} onPress={ async () => {
-                const response = await login(email, password);
-                alert()
+            <Input onChangeText={setEmail} keyboardType={'email-address'} />
+            <Input onChangeText={setPassword} secureTextEntry />
+            <Button title={"Login"} onPress={async () => {
+                try {
+                    const response = await login(email, password);
+                    console.log("Login response:", response);
+                    Alert.alert('Login status', 'Login with success');
+                } catch (error) {
+                    console.error("Login error:", error);
+                }
             }} />
         </Container>
     )
 }
 
-export default Login
+export default Login;
