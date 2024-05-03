@@ -1,44 +1,50 @@
-import {Button} from "react-native";
+import React, {useState} from "react";
 import styled from "styled-components/native";
-import {useState} from "react";
-import {register} from "../api";
-import {useNavigation} from "@react-navigation/native";
+import { Text } from "react-native";
 
 const Container = styled.View`
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-top: 50px;
+    padding: 50px;
 `
 
 const Input = styled.TextInput`
-    width: 80%;
-    font-size: 30px;
-    padding: 4px;
-    border: 1px solid black;
+    width: 100%;
+    height: 30px;
+    border: 1px solid;
+    margin-bottom: 10px;
+    padding: 8px;
 `
 
-const Register = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+const Button = styled.TouchableOpacity`
+`
 
-    const navigation = useNavigation<any>();
-    const goToLogin = () => {
-        navigation.navigate('Login')
-    }
+export interface IRegister {
+    onSubmit: (email: string, password: string) => void
+    goToLogin: () => void;
+}
+
+const Register: React.FC<IRegister> = ({onSubmit, goToLogin}) => {
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleSubmit = () => onSubmit(email, password)
 
     return (
         <Container>
-            <Input onChangeText={setEmail} keyboardType={'email-address'} ></Input>
-            <Input onChangeText={setPassword} secureTextEntry ></Input>
-            <Button title={"Register"} onPress={ async () => {
-                const response = await register(email, password);
-                // console.log(response)
-            }} />
-            <Button title={"Login"} onPress={() => goToLogin()} />
+            <Input onChangeText={setEmail} keyboardType="email-address" />
+            <Input onChangeText={setPassword} secureTextEntry />
+            <Button onPress={handleSubmit}>
+                <Text>Register</Text>
+            </Button>
+            <Button onPress={goToLogin}>
+                <Text>Log in</Text>
+            </Button>
         </Container>
     )
 }
 
-export default Register
+export default Register;
