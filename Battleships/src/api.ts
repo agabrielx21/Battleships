@@ -36,3 +36,51 @@ export const login = async (email: string, password: string) => {
     const data = await response.json();
     return data.accessToken;
 }
+
+export const listGames = async (token: string) => {
+    const response = await fetch(`${baseURL}/game`, {
+        method: "GET",
+        headers: {
+            ...baseHeaders,
+            'Authorization': `Bearer ${token}`
+        }
+    })
+
+    const data = await response.json()
+
+    console.log(data.games)
+
+    return data.games
+}
+
+export const createGame = async (token: string) => {
+    const response = await fetch(`${baseURL}/game`, {
+        method: "POST",
+        headers: {
+            ...baseHeaders,
+            'Authorization': `Bearer ${token}`
+        }
+    })
+
+    const data = await response.json()
+
+    console.log(data)
+
+    return data
+}
+
+export const loadGame = async (token: string, gameId: string) => {
+    const response = await fetch(`${baseURL}/game/${gameId}`, {
+        method: "GET",
+        headers: {
+            ...baseHeaders,
+            'Authorization': `Bearer ${token}`
+        }
+    })
+
+    const data = await response.json()
+
+    console.log(data)
+
+    return data
+}
