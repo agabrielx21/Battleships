@@ -12,15 +12,7 @@ interface IAuthContext {
 const AuthContext = createContext<IAuthContext>({
     token: '',
     login: async () => {},
-    register: async () => {}
-})
-
-export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
-    const [token, setToken] = useState<string>('')
-    login: async () => {
-    },
-    register: async () => {
-    },
+    register: async () => {},
     isLoading: false
 })
 
