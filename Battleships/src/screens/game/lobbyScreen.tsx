@@ -6,8 +6,9 @@ import GameListItem from "../../components/gameListItem";
 import styled from "styled-components/native";
 import {useNavigation} from "@react-navigation/native";
 import {GameRouteNames} from "../../router/routeNames";
+import {SafeAreaView} from "react-native-safe-area-context";
 
-const Container = styled.SafeAreaView`
+const Container = styled(SafeAreaView)`
     display: flex;
     flex: 1;
     padding: 8px;

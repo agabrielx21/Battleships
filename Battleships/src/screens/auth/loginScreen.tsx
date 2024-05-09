@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native"
-import Login from "../../components/login";
+import Login from "../../components/Login";
 import {AuthRouteNames} from "../../router/routeNames";
 import { useAuth } from "../../hooks/authContext"
 

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from 'react'
 import { loadGame } from "../api";
 import { useAuth } from "./authContext";
+import { Text } from 'react-native'
 
 interface User {
     id: string;

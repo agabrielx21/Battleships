@@ -1,22 +1,25 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { Text } from 'react-native';
 import { useRoute } from "@react-navigation/native";
 import { GameContext, useGameContext} from "../../hooks/gameContext";
 
 const TableScreen = () => {
-    console.log("Entered")
-    const route = useRoute();
-    const game = useGameContext();
+    const route = useRoute<any>();
+    const gameContext = useGameContext();
+    console.log(gameContext);
 
-    console.log(game);
+    useEffect(() => {
+        gameContext.loadGame(route.params.gameId)
+    }, [])
+
 
     return (
         <Text>Game</Text>
     )
 }
 
-export default () => {
+export default () => (
     <GameContext>
         <TableScreen/>
     </GameContext>
-};
+);

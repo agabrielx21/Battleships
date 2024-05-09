@@ -1,4 +1,4 @@
-import Register from "../../components/register"
+import Register from "../../components/Register"
 import { useAuth } from "../../hooks/authContext"
 import {useNavigation} from "@react-navigation/native";
 import {AuthRouteNames} from "../../router/routeNames";
