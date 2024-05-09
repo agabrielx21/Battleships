@@ -1,7 +1,6 @@
 import { createContext, useContext, useState } from 'react'
 import { loadGame } from "../api";
 import { useAuth } from "./authContext";
-import { Text } from 'react-native'
 
 interface User {
     id: string;
@@ -29,8 +28,8 @@ interface Game {
     player2Id: string | null;
     playerToMoveId: string;
     "moves": Move[];
-    "player1": User[];
-    "player2": User[];
+    "player1": User;
+    "player2": User | null;
 }
 
 interface GameContext {
@@ -50,6 +49,7 @@ export const GameContext: React.FC<{children: React.ReactNode}> = ({children}) =
 
     const handleLoadGame = async (id: string) => {
         const response = await loadGame(auth.token, id)
+        setGame(response)
     }
 
     return(

@@ -81,3 +81,19 @@ export const loadGame = async (token: string, gameId: string) => {
 
     return data
 }
+
+export const joinGame = async (token: string, gameId: string) => {
+    const response = await fetch(`${baseURL}/game/join/${gameId}`, {
+        method: "POST",
+        headers: {
+            ...baseHeaders,
+            'Authorization': `Bearer ${token}`
+        }
+    })
+
+    const data = await response.json()
+
+    console.log(data)
+
+    return data
+}

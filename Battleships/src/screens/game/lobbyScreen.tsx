@@ -1,50 +1,43 @@
-import {Text, TouchableOpacity} from 'react-native'
-import {useEffect, useState} from "react";
-import {createGame, listGames, loadGame} from "../../api";
+import React, {useEffect} from 'react'
+import {Text, TouchableOpacity} from 'react-native';
+import {useNavigation, useRoute} from "@react-navigation/native";
+import {GameContext, useGameContext} from "../../hooks/gameContext";
+import {joinGame} from "../../api";
 import {useAuth} from "../../hooks/authContext";
-import GameListItem from "../../components/gameListItem";
-import styled from "styled-components/native";
-import {useNavigation} from "@react-navigation/native";
 import {GameRouteNames} from "../../router/routeNames";
-import {SafeAreaView} from "react-native-safe-area-context";
-
-const Container = styled(SafeAreaView)`
-    display: flex;
-    flex: 1;
-    padding: 8px;
-`
-
-const GameList = styled.ScrollView`
-`
 
 const LobbyScreen = () => {
     const auth = useAuth();
-    const [games, setGames] = useState<any[]>([]);
+
+    const route = useRoute<any>();
+    const gameContext = useGameContext();
 
     useEffect(() => {
-        listGames(auth.token).then(setGames);
-    }, []);
+        gameContext.loadGame(route.params.gameId)
+    }, [])
 
     const navigation = useNavigation<any>();
 
-    const handleAddGame = async () => {
-        await createGame(auth.token);
-        await listGames(auth.token).then(setGames);
+    const handleJoinGame = async () => {
+        await joinGame(auth.token, route.params.gameId);
+        navigation.navigate(GameRouteNames.TABLE, {gameId: gameContext.game?.id})
     }
 
     return (
-        <Container>
-            <TouchableOpacity onPress={handleAddGame}><Text>Create Game</Text></TouchableOpacity>
-            <GameList>
-                {games.map(game => (
-                    <GameListItem status={game.status} id={game.id} key={game.id} onPress={() =>
-                        navigation.navigate(GameRouteNames.TABLE, {gameId: game.id})
-                    } />
-                ))}
-
-            </GameList>
-        </Container>
+        <>
+            <Text>
+                Game Id: {gameContext.game?.id} {'\n'}
+                Opponent: {gameContext.game?.player1.email} {'\n'}
+            </Text>
+            <TouchableOpacity onPress={handleJoinGame}>
+                <Text>Join Game</Text>
+            </TouchableOpacity>
+        </>
     )
 }
 
-export default LobbyScreen;
+export default () => (
+    <GameContext>
+        <LobbyScreen/>
+    </GameContext>
+);
