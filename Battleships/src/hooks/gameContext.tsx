@@ -2,25 +2,6 @@ import { createContext, useContext, useState } from 'react'
 import { loadGame } from "../api";
 import { useAuth } from "./authContext";
 
-interface User {
-    id: string;
-    email: string;
-}
-
-interface Move {
-    x: string;
-    y: number;
-    result: boolean;
-    playerId: string;
-}
-
-enum GameStatus {
-    CREATED = "created",
-    MAP_CONFIG = "map_config",
-    ACTIVE = "active",
-    FINISHED = "finished"
-}
-
 interface Game {
     id: string;
     status: GameStatus;
@@ -30,6 +11,32 @@ interface Game {
     "moves": Move[];
     "player1": User;
     "player2": User | null;
+}
+
+enum GameStatus {
+    CREATED = "created",
+    MAP_CONFIG = "map_config",
+    ACTIVE = "active",
+    FINISHED = "finished"
+}
+
+interface Move {
+    x: string;
+    y: number;
+    result: boolean;
+    playerId: string;
+}
+
+interface User {
+    id: string;
+    email: string;
+}
+
+export interface Ship {
+    x: string;
+    y: number;
+    size: 2 | 3 | 4 | 6;
+    direction: "horizontal" | "vertical";
 }
 
 interface GameContext {

@@ -97,3 +97,22 @@ export const joinGame = async (token: string, gameId: string) => {
 
     return data
 }
+
+export const strike = async (token: string, gameId: string, x: string, y: number) => {
+    const response = await fetch(`${baseURL}/strike/${gameId}`, {
+        method: "POST",
+        headers: {
+            ...baseHeaders
+        },
+        body: JSON.stringify({
+            x,
+            y,
+        })
+    })
+
+    const data = await response.json();
+
+    console.log(data)
+
+    return data;
+};
