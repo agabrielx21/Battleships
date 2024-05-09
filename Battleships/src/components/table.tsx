@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, Button, Alert } from 'react-native';
+import { View, TextInput, StyleSheet, Button, Alert, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
 const Table = () => {
@@ -42,8 +42,45 @@ const Table = () => {
         }
     };
 
+    const renderGridCell = (x: string, y: string) => {
+        const ship = ships.find(ship => ship.x === x && ship.y === y);
+        if (ship) {
+            const { x: shipX, y: shipY, size, direction } = ship;
+            if (direction === 'HORIZONTAL' && x.charCodeAt(0) >= shipX.charCodeAt(0) && x.charCodeAt(0) < shipX.charCodeAt(0) + parseInt(size)) {
+                return <View style={styles.shipCell}></View>;
+            } else if (direction === 'VERTICAL' && parseInt(y) >= parseInt(shipY) && parseInt(y) < parseInt(shipY) + parseInt(size)) {
+                return <View style={styles.shipCell}></View>;
+            }
+        }
+        return <View style={styles.gridCell}></View>;
+    };
+
+
     return (
         <View>
+            <View style={styles.grid}>
+                <View style={styles.gridRow}>
+                    <View style={styles.gridHeaderCell}></View>
+                    {[...Array(10)].map((_, i) => (
+                        <View key={i} style={styles.gridHeaderCell}>
+                            <Text style={styles.gridHeaderText}>{String.fromCharCode(65 + i)}</Text>
+                        </View>
+                    ))}
+                </View>
+                {[...Array(10)].map((_, i) => (
+                    <View key={i} style={styles.gridRow}>
+                        <View style={styles.gridHeaderCell}>
+                            <Text style={styles.gridHeaderText}>{i + 1}</Text>
+                        </View>
+                        {[...Array(10)].map((_, j) => (
+                            <View key={j} style={styles.gridCell}>
+                                {renderGridCell(String.fromCharCode(65 + j), (i + 1).toString())}
+                            </View>
+                        ))}
+                    </View>
+                ))}
+            </View>
+            {'\n'}
             {ships.map((ship, index) => (
                 <View key={index} style={styles.shipContainer}>
                     <TextInput
@@ -90,6 +127,39 @@ const Table = () => {
 };
 
 const styles = StyleSheet.create({
+    grid: {
+        flexDirection: 'column',
+    },
+    gridRow: {
+        flexDirection: 'row',
+    },
+    gridHeaderCell: {
+        width: 30,
+        height: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f0f0f0',
+    },
+    gridHeaderText: {
+        fontSize: 12,
+        fontWeight: 'bold',
+    },
+    gridCell: {
+        width: 30,
+        height: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
+        borderWidth: 1,
+        borderColor: '#ccc',
+    },
+    shipCell: {
+        width: 30,
+        height: 30,
+        backgroundColor: 'blue',
+        borderWidth: 1,
+        borderColor: '#ccc',
+    },
     shipContainer: {
         flexDirection: 'row',
         alignItems: 'center',

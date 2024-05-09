@@ -19,8 +19,12 @@ const LobbyScreen = () => {
     const navigation = useNavigation<any>();
 
     const handleJoinGame = async () => {
-        await joinGame(auth.token, route.params.gameId);
-        navigation.navigate(GameRouteNames.TABLE, {gameId: gameContext.game?.id})
+        try {
+            await joinGame(auth.token, route.params.gameId);
+            navigation.navigate(GameRouteNames.TABLE, {gameId: gameContext.game?.id});
+        } catch (error) {
+            console.error("Error joining game:", error);
+        }
     }
 
     return (
