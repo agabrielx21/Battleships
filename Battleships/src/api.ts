@@ -46,7 +46,12 @@ export const listGames = async (token: string) => {
         }
     })
 
+    console.log('entering..')
+
     const data = await response.json()
+
+    console.log(data)
+
     return data.games
 }
 

@@ -4,9 +4,9 @@ import { Picker } from '@react-native-picker/picker';
 
 const Table = () => {
     const [ships, setShips] = useState([
-        { x: '', y: '', size: '', direction: '' },
-        { x: '', y: '', size: '', direction: '' },
-        { x: '', y: '', size: '', direction: '' },
+        { x: '', y: 0, size: 0, direction: '' },
+        { x: '', y: 0, size: 0, direction: '' },
+        { x: '', y: 0, size: 0, direction: '' },
     ]);
     const [editingEnabled, setEditingEnabled] = useState(true);
 
@@ -15,7 +15,7 @@ const Table = () => {
             if (!ship.x || !ship.y || !ship.size || !ship.direction) {
                 return false;
             }
-            if (!/^[A-J]$/.test(ship.x) || !/^[1-9]$/.test(ship.y)) {
+            if (!/^[A-J]$/.test(ship.x) || !/^[1-9]$/.test(String(ship.y))) {
                 return false;
             }
         }
@@ -28,7 +28,6 @@ const Table = () => {
             return;
         }
         const updatedShips = [...ships];
-        // @ts-ignore
         updatedShips[index][key] = value;
         setShips(updatedShips);
     };
@@ -42,13 +41,13 @@ const Table = () => {
         }
     };
 
-    const renderGridCell = (x: string, y: string) => {
+    const renderGridCell = (x: string, y: number) => {
         const ship = ships.find(ship => ship.x === x && ship.y === y);
         if (ship) {
             const { x: shipX, y: shipY, size, direction } = ship;
-            if (direction === 'HORIZONTAL' && x.charCodeAt(0) >= shipX.charCodeAt(0) && x.charCodeAt(0) < shipX.charCodeAt(0) + parseInt(size)) {
+            if (direction === 'HORIZONTAL' && x.charCodeAt(0) >= shipX.charCodeAt(0) && x.charCodeAt(0) < shipX.charCodeAt(0) + size) {
                 return <View style={styles.shipCell}></View>;
-            } else if (direction === 'VERTICAL' && parseInt(y) >= parseInt(shipY) && parseInt(y) < parseInt(shipY) + parseInt(size)) {
+            } else if (direction === 'VERTICAL' && y >= shipY && y < shipY + size) {
                 return <View style={styles.shipCell}></View>;
             }
         }
@@ -74,7 +73,7 @@ const Table = () => {
                         </View>
                         {[...Array(10)].map((_, j) => (
                             <View key={j} style={styles.gridCell}>
-                                {renderGridCell(String.fromCharCode(65 + j), (i + 1).toString())}
+                                {renderGridCell(String.fromCharCode(65 + j), (i + 1))}
                             </View>
                         ))}
                     </View>
