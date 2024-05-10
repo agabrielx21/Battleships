@@ -36,7 +36,7 @@ export interface Ship {
     x: string;
     y: number;
     size: 2 | 3 | 4 | 6;
-    direction: "horizontal" | "vertical";
+    direction: "HORIZONTAL" | "VERTICAL";
 }
 
 interface GameContext {

@@ -1,176 +1,151 @@
-import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, Button, Alert, Text } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import React, {useState} from 'react';
+import {View, Text, Button} from 'react-native';
+import {Picker} from '@react-native-picker/picker';
+import {Ship, useGameContext} from "../hooks/gameContext";
+import {mapConfig} from "../api";
+import {useAuth} from "../hooks/authContext";
 
-const Table = () => {
-    const [ships, setShips] = useState([
-        { x: '', y: 0, size: 0, direction: '' },
-        { x: '', y: 0, size: 0, direction: '' },
-        { x: '', y: 0, size: 0, direction: '' },
-    ]);
-    const [editingEnabled, setEditingEnabled] = useState(true);
+const Table: React.FC = () => {
+    const auth = useAuth();
+    const gameContext = useGameContext();
 
-    const validateShips = () => {
-        for (const ship of ships) {
-            if (!ship.x || !ship.y || !ship.size || !ship.direction) {
-                return false;
-            }
-            if (!/^[A-J]$/.test(ship.x) || !/^[1-9]$/.test(String(ship.y))) {
-                return false;
+    const [ships, setShips] = useState<Ship[]>([]);
+    const [currentShip, setCurrentShip] = useState<Partial<Ship>>({});
+    const [grid, setGrid] = useState<Array<Array<number>>>(Array.from({length: 10}, () => Array(10).fill(0)));
+
+    // const validateShip = (ship: Partial<Ship>): boolean => {
+    //     if (!ship.x || !ship.y || !ship.size || !ship.direction)
+    //         return false;
+    //
+    //     if (ship.direction === "VERTICAL" && ship.y + ship.size > 10)
+    //         return false;
+    //
+    //     if (ship.direction === "HORIZONTAL" && ship.x.charCodeAt(0) + ship.size > 74)
+    //         return false;
+    //
+    //     return true
+    // };
+
+    const validateShip = (ship: Partial<Ship>): boolean => {
+        if (!ship.x || !ship.y || !ship.size || !ship.direction)
+            return false;
+
+        // Check if any of the cells the ship will occupy are already occupied
+        for (let i = 0; i < ship.size!; i++) {
+            let row = ship.direction === "VERTICAL" ? ship.y! + i : ship.y!;
+            let col = ship.direction === "HORIZONTAL" ? ship.x!.charCodeAt(0) - 65 + i : ship.x!.charCodeAt(0) - 65;
+
+            // Check if the cell is out of bounds or already occupied
+            if (row < 1 || row > 10 || col < 0 || col > 9 || grid[row - 1][col] !== 0) {
+                return false; // Overlaps with existing ship or out of bounds
             }
         }
-        return true;
+
+        return true; // Ship can be placed
     };
 
-    const handleInputChange = (index: number, key: string, value: string) => {
-        if (!editingEnabled) {
-            console.log('Editing Disabled', 'Editing ships is disabled. Press "Done" to finish.');
-            return;
+
+    const handleCreateShip = () => {
+        if (validateShip(currentShip) && ships.length < 10) {
+            setShips(prevShips => [...prevShips, currentShip as Ship]);
+
+            // Update grid with new ship
+            const updatedGrid = [...grid];
+            for (let i = 0; i < currentShip.size!; i++) {
+                if (currentShip.direction === "VERTICAL") {
+                    updatedGrid[currentShip.y! + i - 1][currentShip.x!.charCodeAt(0) - 65] = ships.length + 1;
+                } else {
+                    updatedGrid[currentShip.y! - 1][currentShip.x!.charCodeAt(0) - 65 + i] = ships.length + 1;
+                }
+            }
+            setGrid(updatedGrid);
+
+            setCurrentShip({});
+        } else if (ships.length >= 10) {
+            alert("Maximum number of ships reached.");
+        } else {
+            alert('The ship cannot be placed');
         }
-        const updatedShips = [...ships];
-        updatedShips[index][key] = value;
-        setShips(updatedShips);
     };
 
     const handleDone = () => {
-        if (validateShips()) {
-            setEditingEnabled(false);
-            console.log(ships);
-        } else {
-            console.log('Incomplete or Incorrect Ship Data', 'Please fill all fields correctly for each ship.');
-        }
+        console.log(ships)
+        // mapConfig(auth.token, gameContext, ships)
     };
-
-    const renderGridCell = (x: string, y: number) => {
-        const ship = ships.find(ship => ship.x === x && ship.y === y);
-        if (ship) {
-            const { x: shipX, y: shipY, size, direction } = ship;
-            if (direction === 'HORIZONTAL' && x.charCodeAt(0) >= shipX.charCodeAt(0) && x.charCodeAt(0) < shipX.charCodeAt(0) + size) {
-                return <View style={styles.shipCell}></View>;
-            } else if (direction === 'VERTICAL' && y >= shipY && y < shipY + size) {
-                return <View style={styles.shipCell}></View>;
-            }
-        }
-        return <View style={styles.gridCell}></View>;
-    };
-
 
     return (
         <View>
-            <View style={styles.grid}>
-                <View style={styles.gridRow}>
-                    <View style={styles.gridHeaderCell}></View>
-                    {[...Array(10)].map((_, i) => (
-                        <View key={i} style={styles.gridHeaderCell}>
-                            <Text style={styles.gridHeaderText}>{String.fromCharCode(65 + i)}</Text>
-                        </View>
+            <Text>Grid:</Text>
+            {grid.map((row, rowIndex) => (
+                <View key={rowIndex} style={{flexDirection: 'row'}}>
+                    {row.map((cell, colIndex) => (
+                        <Text key={colIndex}>{cell}</Text>
                     ))}
                 </View>
-                {[...Array(10)].map((_, i) => (
-                    <View key={i} style={styles.gridRow}>
-                        <View style={styles.gridHeaderCell}>
-                            <Text style={styles.gridHeaderText}>{i + 1}</Text>
-                        </View>
-                        {[...Array(10)].map((_, j) => (
-                            <View key={j} style={styles.gridCell}>
-                                {renderGridCell(String.fromCharCode(65 + j), (i + 1))}
-                            </View>
-                        ))}
-                    </View>
-                ))}
-            </View>
-            {'\n'}
-            {ships.map((ship, index) => (
-                <View key={index} style={styles.shipContainer}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="X"
-                        value={ship.x}
-                        onChangeText={(text) => handleInputChange(index, 'x', text)}
-                        editable={editingEnabled}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Y"
-                        value={ship.y}
-                        onChangeText={(text) => handleInputChange(index, 'y', text)}
-                        editable={editingEnabled}
-                    />
-                    <Picker
-                        style={styles.input}
-                        selectedValue={ship.size}
-                        onValueChange={(itemValue) => handleInputChange(index, 'size', itemValue)}
-                        enabled={editingEnabled}
-                    >
-                        <Picker.Item label="Select Size" value="" />
-                        <Picker.Item label="2" value="2" />
-                        <Picker.Item label="3" value="3" />
-                        <Picker.Item label="4" value="4" />
-                        <Picker.Item label="6" value="6" />
-                    </Picker>
-                    <Picker
-                        style={styles.input}
-                        selectedValue={ship.direction}
-                        onValueChange={(itemValue) => handleInputChange(index, 'direction', itemValue)}
-                        enabled={editingEnabled}
-                    >
-                        <Picker.Item label="Select Direction" value="" />
-                        <Picker.Item label="Horizontal" value="HORIZONTAL" />
-                        <Picker.Item label="Vertical" value="VERTICAL" />
-                    </Picker>
-                </View>
             ))}
-            {editingEnabled && <Button title="Done" onPress={handleDone} disabled={!validateShips()} />}
+            {ships.length === 10 && <Button title="Done" onPress={handleDone}/>}
+
+            <Text>{'\n'}Enter details for Ship:</Text>
+            <Picker
+                selectedValue={currentShip.x}
+                onValueChange={(itemValue: any) => setCurrentShip(prev => ({...prev, x: itemValue}))}
+            >
+                <Picker.Item label="Select x axis" value=''/>
+                <Picker.Item label="A" value="A"/>
+                <Picker.Item label="B" value="B"/>
+                <Picker.Item label="C" value="C"/>
+                <Picker.Item label="D" value="D"/>
+                <Picker.Item label="E" value="E"/>
+                <Picker.Item label="F" value="F"/>
+                <Picker.Item label="G" value="G"/>
+                <Picker.Item label="H" value="H"/>
+                <Picker.Item label="I" value="I"/>
+                <Picker.Item label="J" value="J"/>
+            </Picker>
+            <Picker
+                selectedValue={currentShip.y}
+                onValueChange={(itemValue: any) => setCurrentShip(prev => ({...prev, y: itemValue}))}
+            >
+                <Picker.Item label="Select y axis" value={0}/>
+                <Picker.Item label="1" value={1}/>
+                <Picker.Item label="2" value={2}/>
+                <Picker.Item label="3" value={3}/>
+                <Picker.Item label="4" value={4}/>
+                <Picker.Item label="5" value={5}/>
+                <Picker.Item label="6" value={6}/>
+                <Picker.Item label="7" value={7}/>
+                <Picker.Item label="8" value={8}/>
+                <Picker.Item label="9" value={9}/>
+                <Picker.Item label="10" value={10}/>
+            </Picker>
+            <Picker
+                selectedValue={currentShip.size}
+                onValueChange={(itemValue: any) => setCurrentShip(prev => ({...prev, size: itemValue}))}
+            >
+                <Picker.Item label="Select size" value={0}/>
+                <Picker.Item label="2" value={2}/>
+                <Picker.Item label="3" value={3}/>
+                <Picker.Item label="4" value={4}/>
+                <Picker.Item label="6" value={6}/>
+
+            </Picker>
+            <Picker
+                selectedValue={currentShip.direction}
+                onValueChange={(itemValue: any) => setCurrentShip(prev => ({...prev, direction: itemValue}))}
+            >
+                <Picker.Item label="Select direction" value=''/>
+                <Picker.Item label="HORIZONTAL" value="HORIZONTAL"/>
+                <Picker.Item label="VERTICAL" value="VERTICAL"/>
+            </Picker>
+            <Button title="Create Ship" onPress={handleCreateShip}/>
+
+            <Text>Created Ships:</Text>
+            {ships.map((ship, index) => (
+                <Text
+                    key={index}>{`Ship ${index + 1}: X-${ship.x}, Y-${ship.y}, Size-${ship.size}, Direction-${ship.direction}`}</Text>
+            ))}
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    grid: {
-        flexDirection: 'column',
-    },
-    gridRow: {
-        flexDirection: 'row',
-    },
-    gridHeaderCell: {
-        width: 30,
-        height: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f0f0f0',
-    },
-    gridHeaderText: {
-        fontSize: 12,
-        fontWeight: 'bold',
-    },
-    gridCell: {
-        width: 30,
-        height: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#ffffff',
-        borderWidth: 1,
-        borderColor: '#ccc',
-    },
-    shipCell: {
-        width: 30,
-        height: 30,
-        backgroundColor: 'blue',
-        borderWidth: 1,
-        borderColor: '#ccc',
-    },
-    shipContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    input: {
-        flex: 1,
-        marginRight: 10,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        padding: 10,
-    },
-});
 
 export default Table;

@@ -39,6 +39,23 @@ export const login = async (email: string, password: string) => {
     return data.accessToken;
 }
 
+export const getUser = async (token: string) => {
+    const response = await fetch(`${baseURL}/user/details/me`, {
+        method: "GET",
+        headers: {
+            ...baseHeaders,
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    const data = await response.json();
+
+    console.log(data);
+
+    return data;
+}
+
+
 export const listGames = async (token: string) => {
     const response = await fetch(`${baseURL}/game`, {
         method: "GET",
@@ -48,12 +65,7 @@ export const listGames = async (token: string) => {
         }
     })
 
-    console.log('entering..')
-
     const data = await response.json()
-
-    console.log(data)
-
     return data.games
 }
 
