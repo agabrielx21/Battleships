@@ -1,3 +1,5 @@
+import {Ship} from "./hooks/gameContext";
+
 const baseURL = "http://163.172.177.98:8081"
 
 const baseHeaders = {
@@ -94,6 +96,25 @@ export const joinGame = async (token: string, gameId: string) => {
             ...baseHeaders,
             'Authorization': `Bearer ${token}`
         }
+    })
+
+    const data = await response.json()
+
+    console.log(data)
+
+    return data
+}
+
+export const mapConfig = async (token: string, gameId: string, ships: Ship[]) => {
+    const response = await fetch(`${baseURL}/game/${gameId}`, {
+        method: "PATCH",
+        headers: {
+            ...baseHeaders,
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            ships
+        })
     })
 
     const data = await response.json()
