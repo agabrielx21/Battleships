@@ -11,6 +11,7 @@ const Container = styled.SafeAreaView`
     display: flex;
     flex: 1;
     padding: 8px;
+    margin-bottom: 20px;
 `
 
 const GameList = styled.ScrollView`
@@ -49,6 +50,14 @@ const MenuScreen = () => {
                 {games.filter(game => game.status === 'CREATED' && game.player1Id !== user.user.id).map(game => (
                     <GameListItem status={game.status} id={game.id} key={game.id} onPress={() =>
                         navigation.navigate(GameRouteNames.LOBBY, {gameId: game.id})
+                    } />
+                ))}
+            </GameList>
+            <Text>{'\n'}Game history</Text>
+            <GameList>
+                {games.filter(game => game.status === 'FINISHED' && (game.player1Id === user.user.id || game.player2Id === user.user.id)).map(game => (
+                    <GameListItem status={game.status} id={game.id} key={game.id} onPress={() =>
+                        navigation.navigate(GameRouteNames.REPLAY, {gameId: game.id})
                     } />
                 ))}
             </GameList>

@@ -8,6 +8,7 @@ import {Picker} from "@react-native-picker/picker";
 import styled from "styled-components/native";
 
 const Container = styled.ScrollView`
+    margin-bottom: 20px;
 `
 
 const TableScreen = () => {
