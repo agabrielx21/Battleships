@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from 'react'
 import { loadGame } from "../api";
 import { useAuth } from "./authContext";
 
-interface Game {
+export interface Game {
     id: string;
     status: GameStatus;
     player1Id: string;
@@ -21,7 +21,7 @@ enum GameStatus {
     FINISHED = "FINISHED"
 }
 
-interface Move {
+export interface Move {
     x: string;
     y: number;
     result: boolean;
