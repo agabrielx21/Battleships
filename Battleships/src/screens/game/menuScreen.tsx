@@ -40,7 +40,7 @@ const MenuScreen = () => {
             <GameList>
                 {games.filter(game => game.status === 'CREATED' && game.player1Id === user.user.id).map(game => (
                     <GameListItem status={game.status} id={game.id} key={game.id} onPress={() =>
-                        navigation.navigate(GameRouteNames.TABLE, {gameId: game.id})
+                        navigation.navigate(GameRouteNames.CONFIG, {gameId: game.id})
                     } />
                 ))}
             </GameList>
