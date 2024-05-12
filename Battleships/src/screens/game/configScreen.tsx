@@ -79,7 +79,7 @@ const ConfigScreen = () => {
 
     useEffect(() => {
         gameContext.loadGame(route.params.gameId);
-    }, []);
+    }, [gameContext.game]);
 
     return (
         <>
@@ -102,7 +102,7 @@ const ConfigScreen = () => {
                 </View>
             ))}
             {ships.length === 10 ? (
-                <Button title="Done" onPress={handleDone}/>
+                <Button title="Done" onPress={handleDone} disabled={!gameContext.game?.player2}/>
             ) : (
                 <>
                     <Text>{'\n'}Enter details for Ship {ships.length + 1}:</Text>
