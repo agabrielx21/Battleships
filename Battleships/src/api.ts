@@ -50,7 +50,7 @@ export const getUser = async (token: string) => {
 
     const data = await response.json();
 
-    console.log(data);
+    // console.log(data);
 
     return data;
 }
@@ -80,7 +80,7 @@ export const createGame = async (token: string) => {
 
     const data = await response.json()
 
-    console.log(data)
+    // console.log(data)
 
     return data
 }
@@ -96,7 +96,7 @@ export const loadGame = async (token: string, gameId: string) => {
 
     const data = await response.json()
 
-    console.log(data)
+    // console.log(data)
 
     return data
 }
@@ -112,7 +112,7 @@ export const joinGame = async (token: string, gameId: string) => {
 
     const data = await response.json()
 
-    console.log(data)
+    // console.log(data)
 
     return data
 }
@@ -131,7 +131,7 @@ export const mapConfig = async (token: string, gameId: string, ships: Ship[]) =>
 
     const data = await response.json()
 
-    console.log(data)
+    // console.log(data)
 
     return data
 }

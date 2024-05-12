@@ -5,6 +5,10 @@ import { useAuth } from "../../hooks/authContext";
 import { useRoute } from "@react-navigation/native";
 import {getUser, listGames, mapConfig, sendStrike} from "../../api";
 import {Picker} from "@react-native-picker/picker";
+import styled from "styled-components/native";
+
+const Container = styled.ScrollView`
+`
 
 const TableScreen = () => {
     const auth = useAuth();
@@ -84,7 +88,7 @@ const TableScreen = () => {
                         (
                             <Text>{'\n'}Wait for opponent's turn...</Text>
                         ): (
-                            <>
+                            <Container>
                                 <Text>{'\n'}It is your turn</Text>
                                 <Text>Enter details for the strike:</Text>
                                 <Picker
@@ -120,7 +124,7 @@ const TableScreen = () => {
                                     <Picker.Item label="10" value={10}/>
                                 </Picker>
                                 <Button title="Strike" onPress={handleStrike}/>
-                            </>
+                            </Container>
                         )
                     }
 
