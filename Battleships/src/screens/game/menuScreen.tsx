@@ -37,6 +37,13 @@ const MenuScreen = () => {
     return (
         <Container>
             <TouchableOpacity onPress={handleAddGame}><Text>New Game</Text></TouchableOpacity>
+            <GameList>
+                {games.filter(game => game.status === 'CREATED' && game.player1Id === user.user.id).map(game => (
+                    <GameListItem status={game.status} id={game.id} key={game.id} onPress={() =>
+                        navigation.navigate(GameRouteNames.TABLE, {gameId: game.id})
+                    } />
+                ))}
+            </GameList>
             <Text>{'\n'}My games</Text>
             <GameList>
                 {games.filter(game => game.status === 'ACTIVE' && (game.player1Id === user.user.id || game.player2Id === user.user.id)).map(game => (
