@@ -72,7 +72,9 @@ const ConfigScreen = () => {
     const handleDone = async () => {
         console.log(ships)
         await mapConfig(auth.token, route.params.gameId, ships)
-        // navigation.navigate(GameRouteNames.TABLE, {gameId: route.params.gameId});
+        navigation.navigate(GameRouteNames.TABLE, {
+            gameId: route.params.gameId,
+        });
     };
 
     useEffect(() => {

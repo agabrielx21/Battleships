@@ -8,16 +8,17 @@ interface Game {
     player1Id: string;
     player2Id: string | null;
     playerToMoveId: string;
-    "moves": Move[];
-    "player1": User;
-    "player2": User | null;
+    moves: Move[];
+    player1: User;
+    player2: User | null;
+    shipsCoord: ShipCoord[] | null
 }
 
 enum GameStatus {
-    CREATED = "created",
-    MAP_CONFIG = "map_config",
-    ACTIVE = "active",
-    FINISHED = "finished"
+    CREATED = "CREATED",
+    MAP_CONFIG = "MAP_CONFIG",
+    ACTIVE = "ACTIVE",
+    FINISHED = "FINISHED"
 }
 
 interface Move {
@@ -27,7 +28,7 @@ interface Move {
     playerId: string;
 }
 
-interface User {
+export interface User {
     id: string;
     email: string;
 }
@@ -37,6 +38,20 @@ export interface Ship {
     y: number;
     size: 2 | 3 | 4 | 6;
     direction: "HORIZONTAL" | "VERTICAL";
+}
+
+export interface ShipCoord {
+    id: string;
+    x: string;
+    y: number;
+    gameId: string;
+    playerId: string;
+    hit: boolean;
+}
+
+export interface Strike{
+    x: string;
+    y: number;
 }
 
 interface GameContext {

@@ -136,11 +136,12 @@ export const mapConfig = async (token: string, gameId: string, ships: Ship[]) =>
     return data
 }
 
-export const strike = async (token: string, gameId: string, x: string, y: number) => {
-    const response = await fetch(`${baseURL}/strike/${gameId}`, {
+export const sendStrike = async (token: string, gameId: string, x: string, y: number) => {
+    const response = await fetch(`${baseURL}/game/strike/${gameId}`, {
         method: "POST",
         headers: {
-            ...baseHeaders
+            ...baseHeaders,
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
             x,
