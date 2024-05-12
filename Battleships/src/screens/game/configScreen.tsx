@@ -2,10 +2,34 @@ import React, {useEffect, useState} from 'react';
 import {GameContext, Ship, useGameContext} from '../../hooks/gameContext';
 import {useAuth} from '../../hooks/authContext';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {Text, View, StyleSheet, Button, TextInput} from 'react-native';
+import {ScrollView, Text} from 'react-native';
 import {Picker} from "@react-native-picker/picker";
 import {mapConfig} from "../../api";
 import {GameRouteNames} from "../../router/routeNames";
+import styled from "styled-components/native";
+import TextCard from "../../components/card";
+import Table from "../../components/table";
+
+const Container = styled.SafeAreaView`
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 20px;
+`
+
+const Button = styled.TouchableOpacity`
+    text-align: center;
+    padding: 10px 15px;
+    border: 1px solid black;
+    border-radius: 10px;
+    margin-top: 20px;
+`
+
+const StyledPicker = styled(Picker)`
+    width: 75%;
+`
 
 const ConfigScreen = () => {
     const auth = useAuth();
@@ -35,7 +59,6 @@ const ConfigScreen = () => {
     };
 
     const canPlaceShipOfSize = (size: number): boolean => {
-        // Check if there are enough available slots for a ship of the given size
         const remainingSlots = {
             2: 4 - (ships.filter(ship => ship.size === 2).length),
             3: 3 - (ships.filter(ship => ship.size === 3).length),
@@ -50,7 +73,6 @@ const ConfigScreen = () => {
         if (validateShip(currentShip)) {
             setShips(prevShips => [...prevShips, currentShip as Ship]);
 
-            // Update grid with new ship
             const updatedGrid = [...grid];
             for (let i = 0; i < currentShip.size!; i++) {
                 if (currentShip.direction === "VERTICAL") {
@@ -70,11 +92,14 @@ const ConfigScreen = () => {
     const navigation = useNavigation<any>();
 
     const handleDone = async () => {
-        console.log(ships)
-        await mapConfig(auth.token, route.params.gameId, ships)
-        navigation.navigate(GameRouteNames.TABLE, {
-            gameId: route.params.gameId,
-        });
+        if (gameContext.game?.player2) {
+            await mapConfig(auth.token, route.params.gameId, ships)
+            navigation.navigate(GameRouteNames.TABLE, {
+                gameId: route.params.gameId,
+            });
+        } else {
+            alert('You don\'t have an opponent');
+        }
     };
 
     useEffect(() => {
@@ -82,84 +107,90 @@ const ConfigScreen = () => {
     }, [gameContext.game]);
 
     return (
-        <>
-            <Text>
-                Game Id: {gameContext.game?.id}{'\n'}
-                Player1: {gameContext.game?.player1.email}{'\n'}
-                Player2: {gameContext.game?.player2?.email}{'\n\n'}
-                Place your ships on the map:{'\n'}
-                - 4 ships with size 2{'\n'}
-                - 3 ships with size 3{'\n'}
-                - 2 ships with size 4 {'\n'}
-                - 1 ships with size 6{'\n'}
-            </Text>
+        <ScrollView>
+            <Container>
+                <TextCard
+                    text={
+                        "Game Id: " + gameContext.game?.id + "\n" +
+                        "Player1: " + gameContext.game?.player1.email + "\n" +
+                        "Player2: " + gameContext.game?.player2?.email + "\n\n" +
+                        "Place your ships on the map:\n" +
+                        "- 4 ships with size 2\n" +
+                        "- 3 ships with size 3\n" +
+                        "- 2 ships with size 4\n" +
+                        "- 1 ships with size 6\n"
+                    }
+                />
 
-            {grid.map((row, rowIndex) => (
-                <View key={rowIndex} style={{flexDirection: 'row'}}>
-                    {row.map((cell, colIndex) => (
-                        <Text key={colIndex}>{cell}</Text>
-                    ))}
-                </View>
-            ))}
-            {ships.length === 10 ? (
-                <Button title="Done" onPress={handleDone} disabled={!gameContext.game?.player2}/>
-            ) : (
-                <>
-                    <Text>{'\n'}Enter details for Ship {ships.length + 1}:</Text>
-                    <Picker
-                        selectedValue={currentShip.x}
-                        onValueChange={(itemValue: any) => setCurrentShip(prev => ({...prev, x: itemValue}))}
-                    >
-                        <Picker.Item label="Select x axis" value=''/>
-                        <Picker.Item label="A" value="A"/>
-                        <Picker.Item label="B" value="B"/>
-                        <Picker.Item label="C" value="C"/>
-                        <Picker.Item label="D" value="D"/>
-                        <Picker.Item label="E" value="E"/>
-                        <Picker.Item label="F" value="F"/>
-                        <Picker.Item label="G" value="G"/>
-                        <Picker.Item label="H" value="H"/>
-                        <Picker.Item label="I" value="I"/>
-                        <Picker.Item label="J" value="J"/>
-                    </Picker>
-                    <Picker
-                        selectedValue={currentShip.y}
-                        onValueChange={(itemValue: any) => setCurrentShip(prev => ({...prev, y: itemValue}))}
-                    >
-                        <Picker.Item label="Select y axis" value={0}/>
-                        <Picker.Item label="1" value={1}/>
-                        <Picker.Item label="2" value={2}/>
-                        <Picker.Item label="3" value={3}/>
-                        <Picker.Item label="4" value={4}/>
-                        <Picker.Item label="5" value={5}/>
-                        <Picker.Item label="6" value={6}/>
-                        <Picker.Item label="7" value={7}/>
-                        <Picker.Item label="8" value={8}/>
-                        <Picker.Item label="9" value={9}/>
-                        <Picker.Item label="10" value={10}/>
-                    </Picker>
-                    <Picker
-                        selectedValue={currentShip.size}
-                        onValueChange={(itemValue: any) => setCurrentShip(prev => ({...prev, size: itemValue}))}
-                    >
-                        <Picker.Item label="Select size" value={0}/>
-                        {canPlaceShipOfSize(2) && <Picker.Item label="2" value={2}/>}
-                        {canPlaceShipOfSize(3) && <Picker.Item label="3" value={3}/>}
-                        {canPlaceShipOfSize(4) && <Picker.Item label="4" value={4}/>}
-                        {canPlaceShipOfSize(6) && <Picker.Item label="6" value={6}/>}
-                    </Picker>
-                    <Picker
-                        selectedValue={currentShip.direction}
-                        onValueChange={(itemValue: any) => setCurrentShip(prev => ({...prev, direction: itemValue}))}
-                    >
-                        <Picker.Item label="Select direction" value=''/>
-                        <Picker.Item label="HORIZONTAL" value="HORIZONTAL"/>
-                        <Picker.Item label="VERTICAL" value="VERTICAL"/>
-                    </Picker>
-                    <Button title="Create Ship" onPress={handleCreateShip}/>
-                </>
-            )}
-        </>
+                <Table grid={grid}></Table>
+
+                {ships.length === 10 ? (
+                    <Button onPress={handleDone}>
+                        <Text>Done</Text>
+                    </Button>
+                ) : (
+                    <>
+                        <Text>{'\n'}Enter details for Ship {ships.length + 1}:</Text>
+                        <StyledPicker
+                            selectedValue={currentShip.x}
+                            onValueChange={(itemValue: any) => setCurrentShip(prev => ({...prev, x: itemValue}))}
+                        >
+                            <Picker.Item label="Select x axis" value=''/>
+                            <Picker.Item label="A" value="A"/>
+                            <Picker.Item label="B" value="B"/>
+                            <Picker.Item label="C" value="C"/>
+                            <Picker.Item label="D" value="D"/>
+                            <Picker.Item label="E" value="E"/>
+                            <Picker.Item label="F" value="F"/>
+                            <Picker.Item label="G" value="G"/>
+                            <Picker.Item label="H" value="H"/>
+                            <Picker.Item label="I" value="I"/>
+                            <Picker.Item label="J" value="J"/>
+                        </StyledPicker>
+                        <StyledPicker
+                            selectedValue={currentShip.y}
+                            onValueChange={(itemValue: any) => setCurrentShip(prev => ({...prev, y: itemValue}))}
+                        >
+                            <Picker.Item label="Select y axis" value={0}/>
+                            <Picker.Item label="1" value={1}/>
+                            <Picker.Item label="2" value={2}/>
+                            <Picker.Item label="3" value={3}/>
+                            <Picker.Item label="4" value={4}/>
+                            <Picker.Item label="5" value={5}/>
+                            <Picker.Item label="6" value={6}/>
+                            <Picker.Item label="7" value={7}/>
+                            <Picker.Item label="8" value={8}/>
+                            <Picker.Item label="9" value={9}/>
+                            <Picker.Item label="10" value={10}/>
+                        </StyledPicker>
+                        <StyledPicker
+                            selectedValue={currentShip.size}
+                            onValueChange={(itemValue: any) => setCurrentShip(prev => ({...prev, size: itemValue}))}
+                        >
+                            <Picker.Item label="Select size" value={0}/>
+                            {canPlaceShipOfSize(2) && <Picker.Item label="2" value={2}/>}
+                            {canPlaceShipOfSize(3) && <Picker.Item label="3" value={3}/>}
+                            {canPlaceShipOfSize(4) && <Picker.Item label="4" value={4}/>}
+                            {canPlaceShipOfSize(6) && <Picker.Item label="6" value={6}/>}
+                        </StyledPicker>
+                        <StyledPicker
+                            selectedValue={currentShip.direction}
+                            onValueChange={(itemValue: any) => setCurrentShip(prev => ({
+                                ...prev,
+                                direction: itemValue
+                            }))}
+                        >
+                            <Picker.Item label="Select direction" value=''/>
+                            <Picker.Item label="HORIZONTAL" value="HORIZONTAL"/>
+                            <Picker.Item label="VERTICAL" value="VERTICAL"/>
+                        </StyledPicker>
+                        <Button onPress={handleCreateShip}>
+                            <Text>Create Ship</Text>
+                        </Button>
+                    </>
+                )}
+            </Container>
+        </ScrollView>
     );
 };
 

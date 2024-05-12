@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {GameContext, Ship, Strike, useGameContext, User} from '../../hooks/gameContext';
-import {Button, Text, View} from 'react-native';
+import {GameContext, Strike, useGameContext} from '../../hooks/gameContext';
+import {Button, Text} from 'react-native';
 import { useAuth } from "../../hooks/authContext";
 import { useRoute } from "@react-navigation/native";
-import {getUser, listGames, mapConfig, sendStrike} from "../../api";
+import {getUser, sendStrike} from "../../api";
 import {Picker} from "@react-native-picker/picker";
 import styled from "styled-components/native";
+import Table from "../../components/table";
+import TextCard from "../../components/card";
 
 const Container = styled.ScrollView`
     margin-bottom: 20px;
@@ -17,8 +19,8 @@ const TableScreen = () => {
     const gameContext = useGameContext();
     const [user, setUser] = useState<any>({ user: { id: '', email: '' }, gamesPlayed: 0, gamesLost: 0, gamesWon: 0, currentlyGamesPlaying: 0 });
 
-    const [myGrid, setMyGrid] = useState<Array<Array<string | boolean>>>(Array.from({ length: 10 }, () => Array(10).fill(false)));
-    const [oppGrid, setOppGrid] = useState<Array<Array<string | boolean>>>(Array.from({ length: 10 }, () => Array(10).fill(false)));
+    const [myGrid, setMyGrid] = useState<Array<Array<string | number>>>(Array.from({ length: 10 }, () => Array(10).fill(0)));
+    const [oppGrid, setOppGrid] = useState<Array<Array<string | number>>>(Array.from({ length: 10 }, () => Array(10).fill(0)));
     const [strike, setStrike] = useState<Partial<Strike>>({});
 
     useEffect(() => {
@@ -35,7 +37,7 @@ const TableScreen = () => {
             gameContext.game.shipsCoord.forEach((ship) => {
                 const xIndex = ship.x.charCodeAt(0) - 'A'.charCodeAt(0);
                 const yIndex = ship.y - 1;
-                updatedMyGrid[yIndex][xIndex] = true;
+                updatedMyGrid[yIndex][xIndex] = 1;
             });
             setMyGrid(updatedMyGrid);
         }
@@ -62,28 +64,20 @@ const TableScreen = () => {
             await sendStrike(auth.token, route.params.gameId, strike.x, strike.y);
     };
 
+
     return (
         <>
             {gameContext.game?.status === 'MAP_CONFIG' ? (
-                <Text>Waiting for opponent to place the ships...</Text>
+                <TextCard
+                text={"Waiting for opponent to place the ships..."}
+                />
             ) : (
                 <>
                     <Text>Your Grid:</Text>
-                    {myGrid.map((row, rowIndex) => (
-                        <View key={rowIndex} style={{ flexDirection: 'row' }}>
-                            {row.map((cell, colIndex) => (
-                                <Text key={colIndex}>{typeof cell === 'boolean' ? (cell ? '1' : '0') : cell}</Text>
-                            ))}
-                        </View>
-                    ))}
+                    <Table grid={myGrid}></Table>
+
                     <Text>{'\n'}Opponent's Grid:</Text>
-                    {oppGrid.map((row, rowIndex) => (
-                        <View key={rowIndex} style={{ flexDirection: 'row' }}>
-                            {row.map((cell, colIndex) => (
-                                <Text key={colIndex}>{typeof cell === 'boolean' ? (cell ? '1' : '0') : cell}</Text>
-                            ))}
-                        </View>
-                    ))}
+                    <Table grid={oppGrid}></Table>
 
                     {gameContext.game?.playerToMoveId !== user.user.id ?
                         (

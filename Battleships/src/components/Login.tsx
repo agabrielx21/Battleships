@@ -3,19 +3,19 @@ import styled from "styled-components/native";
 import {Text} from 'react-native'
 
 const Container = styled.View`
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
     padding: 50px;
 `
 
 const Input = styled.TextInput`
     width: 100%;
-    height: 30px;
+    height: 50px;
     border: 1px solid;
     margin-bottom: 10px;
     padding: 8px;
+    border-radius: 5px;
 `
 
 const Button = styled.TouchableOpacity`
@@ -40,7 +40,7 @@ const Login: React.FC<ILogin> = ({onSubmit, goToRegister}) => {
                 <Text>Log in</Text>
             </Button>
             <Button onPress={goToRegister}>
-                <Text>Register</Text>
+                <Text>Don't have an account? Register</Text>
             </Button>
         </Container>
     )
