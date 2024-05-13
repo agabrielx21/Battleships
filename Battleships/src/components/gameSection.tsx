@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import GameList from './gameList';
 import styled from "styled-components/native";
-import { Text } from "react-native";
+import {Text} from "react-native";
 
 const ToggleContainer = styled.View`
     width: 80%;
@@ -22,7 +22,7 @@ const ToggleButton = styled.TouchableOpacity`
 `
 
 // @ts-ignore
-const GameSection = ({ title, games, filterFunction, navigation, goTo , showButton, buttonLabel, onButtonPress }) => {
+const GameSection = ({title, games, filterFunction, navigation, goTo, showButton, buttonLabel, onButtonPress}) => {
     const [active, setActive] = useState(false);
 
     return (
@@ -32,7 +32,7 @@ const GameSection = ({ title, games, filterFunction, navigation, goTo , showButt
                     {title}
                 </Text>
             </ToggleButton>
-            {active && <GameList games={games} filterFunction={filterFunction} navigation={navigation} goTo={goTo} />}
+            {active && <GameList games={games} filterFunction={filterFunction} navigation={navigation} goTo={goTo}/>}
             {showButton && active && (
                 <Button onPress={onButtonPress}>
                     <Text>

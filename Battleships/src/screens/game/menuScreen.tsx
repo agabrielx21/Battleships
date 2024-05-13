@@ -30,13 +30,8 @@ const MenuScreen = () => {
 
     useEffect(() => {
         getUser(auth.token).then(setUser);
-    }, []);
-
-    useEffect(() => {
         listGames(auth.token).then(setGames);
     }, []);
-
-    const navigation = useNavigation();
 
     const handleLogout = async () => {
         await auth.logout();
@@ -51,6 +46,7 @@ const MenuScreen = () => {
         await listGames(auth.token).then(setGames);
     }
 
+    const navigation = useNavigation();
 
     return (
         <Container>

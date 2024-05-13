@@ -12,7 +12,7 @@ const CardText = styled.Text`
 `
 
 // @ts-ignore
-const TextCard = ({ text }) => {
+const TextCard = ({text}) => {
     return (
         <CardContainer>
             <CardText>

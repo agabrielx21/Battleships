@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { GameContext, useGameContext } from "../../hooks/gameContext";
-import { joinGame } from "../../api";
-import { useAuth } from "../../hooks/authContext";
-import { GameRouteNames } from "../../router/routeNames";
+import React, {useEffect} from 'react';
+import {Text} from 'react-native';
+import {useNavigation, useRoute} from "@react-navigation/native";
+import {GameContext, useGameContext} from "../../hooks/gameContext";
+import {joinGame} from "../../api";
+import {useAuth} from "../../hooks/authContext";
+import {GameRouteNames} from "../../router/routeNames";
 import styled from "styled-components/native";
 import TextCard from '../../components/card'
 

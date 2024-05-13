@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {GameContext, Strike, useGameContext} from '../../hooks/gameContext';
 import {ScrollView, Text} from 'react-native';
-import { useAuth } from "../../hooks/authContext";
-import { useRoute } from "@react-navigation/native";
+import {useAuth} from "../../hooks/authContext";
+import {useRoute} from "@react-navigation/native";
 import {getUser, sendStrike} from "../../api";
 import {Picker} from "@react-native-picker/picker";
 import styled from "styled-components/native";
@@ -34,22 +34,27 @@ const TableScreen = () => {
     const auth = useAuth();
     const route = useRoute<any>();
     const gameContext = useGameContext();
-    const [user, setUser] = useState<any>({ user: { id: '', email: '' }, gamesPlayed: 0, gamesLost: 0, gamesWon: 0, currentlyGamesPlaying: 0 });
+    const [user, setUser] = useState<any>({
+        user: {id: '', email: ''},
+        gamesPlayed: 0,
+        gamesLost: 0,
+        gamesWon: 0,
+        currentlyGamesPlaying: 0
+    });
+    const [uploadShips, setUploadShips] = useState<boolean>(true);
 
-    const [myGrid, setMyGrid] = useState<Array<Array<string | number>>>(Array.from({ length: 10 }, () => Array(10).fill(0)));
-    const [oppGrid, setOppGrid] = useState<Array<Array<string | number>>>(Array.from({ length: 10 }, () => Array(10).fill(0)));
+    const [myGrid, setMyGrid] = useState<Array<Array<string | number>>>(Array.from({length: 10}, () => Array(10).fill(0)));
+    const [oppGrid, setOppGrid] = useState<Array<Array<string | number>>>(Array.from({length: 10}, () => Array(10).fill(0)));
     const [strike, setStrike] = useState<Partial<Strike>>({});
 
     useEffect(() => {
         getUser(auth.token).then(setUser);
-    }, [user.user]);
+    }, []);
 
     useEffect(() => {
         gameContext.loadGame(route.params.gameId);
-    }, [gameContext.game]);
 
-    useEffect(() => {
-        if (gameContext.game?.shipsCoord) {
+        if (gameContext.game?.shipsCoord && uploadShips) {
             const updatedMyGrid = [...myGrid];
             gameContext.game.shipsCoord.forEach((ship) => {
                 const xIndex = ship.x.charCodeAt(0) - 'A'.charCodeAt(0);
@@ -57,19 +62,18 @@ const TableScreen = () => {
                 updatedMyGrid[yIndex][xIndex] = 1;
             });
             setMyGrid(updatedMyGrid);
+            setUploadShips(false);
         }
 
-    }, [gameContext.game]);
-
-    useEffect(() => {
         if (gameContext.game?.moves) {
             gameContext.game.moves.forEach(move => {
-                const { x, y, playerId, result } = move;
+                const {x, y, playerId, result} = move;
                 const xIndex = x.charCodeAt(0) - 'A'.charCodeAt(0);
                 const yIndex = y - 1;
                 const updatedGrid = playerId === user.user.id ? [...oppGrid] : [...myGrid];
-                updatedGrid[yIndex][xIndex] = result ? 'X' : '-';
-                playerId === user.user.id ? setOppGrid(updatedGrid) : setMyGrid(updatedGrid);
+                if (typeof updatedGrid[yIndex][xIndex] === 'number')
+                    updatedGrid[yIndex][xIndex] = result ? 'X' : '-';
+                    playerId === user.user.id ? setOppGrid(updatedGrid) : setMyGrid(updatedGrid);
             });
         }
     }, [gameContext.game]);
@@ -91,14 +95,14 @@ const TableScreen = () => {
                     />
                 ) : (gameContext.game?.status === "FINISHED" ? (
                         (gameContext.game?.playerToMoveId === user.user.id ? (
-                                <TextCard
-                                    text={"You lost!"}
-                                />
-                            ) : (
-                                <TextCard
-                                    text={"You won!"}
-                                />
-                            ))
+                            <TextCard
+                                text={"You lost!"}
+                            />
+                        ) : (
+                            <TextCard
+                                text={"You won!"}
+                            />
+                        ))
                     ) : (
                         <>
                             <Text>Your Grid:</Text>
@@ -110,12 +114,15 @@ const TableScreen = () => {
                             {gameContext.game?.playerToMoveId !== user.user.id ?
                                 (
                                     <Text>{'\n'}Wait for opponent's turn...</Text>
-                                ): (
+                                ) : (
                                     <>
                                         <Text>{'\n'}It is your turn</Text>
                                         <StyledPicker
                                             selectedValue={strike.x}
-                                            onValueChange={(itemValue: any) => setStrike(prev => ({...prev, x: itemValue}))}
+                                            onValueChange={(itemValue: any) => setStrike(prev => ({
+                                                ...prev,
+                                                x: itemValue
+                                            }))}
                                         >
                                             <Picker.Item label="Select x axis" value=''/>
                                             <Picker.Item label="A" value="A"/>
@@ -131,7 +138,10 @@ const TableScreen = () => {
                                         </StyledPicker>
                                         <StyledPicker
                                             selectedValue={strike.y}
-                                            onValueChange={(itemValue: any) => setStrike(prev => ({...prev, y: itemValue}))}
+                                            onValueChange={(itemValue: any) => setStrike(prev => ({
+                                                ...prev,
+                                                y: itemValue
+                                            }))}
                                         >
                                             <Picker.Item label="Select y axis" value={0}/>
                                             <Picker.Item label="1" value={1}/>
@@ -152,7 +162,7 @@ const TableScreen = () => {
                                 )
                             }
 
-                        </>                    )
+                        </>)
                 )}
 
             </Container>
@@ -162,6 +172,6 @@ const TableScreen = () => {
 
 export default () => (
     <GameContext>
-        <TableScreen />
+        <TableScreen/>
     </GameContext>
 );

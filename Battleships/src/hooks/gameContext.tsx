@@ -1,6 +1,6 @@
-import { createContext, useContext, useState } from 'react'
-import { loadGame } from "../api";
-import { useAuth } from "./authContext";
+import {createContext, useContext, useState} from 'react'
+import {loadGame} from "../api";
+import {useAuth} from "./authContext";
 
 export interface Game {
     id: string;
@@ -49,7 +49,7 @@ export interface ShipCoord {
     hit: boolean;
 }
 
-export interface Strike{
+export interface Strike {
     x: string;
     y: number;
 }
@@ -64,7 +64,7 @@ const Context = createContext<GameContext>({
     game: null
 })
 
-export const GameContext: React.FC<{children: React.ReactNode}> = ({children}) => {
+export const GameContext: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [game, setGame] = useState<Game | null>(null);
 
     const auth = useAuth();
@@ -74,7 +74,7 @@ export const GameContext: React.FC<{children: React.ReactNode}> = ({children}) =
         setGame(response)
     }
 
-    return(
+    return (
         <Context.Provider value={{loadGame: handleLoadGame, game}}>
             {children}
         </Context.Provider>

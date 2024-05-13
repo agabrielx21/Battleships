@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import styled from "styled-components/native";
-import { Text } from "react-native";
+import {Text} from "react-native";
 
 const Container = styled.View`
     flex: 1;
@@ -35,8 +35,8 @@ const Register: React.FC<IRegister> = ({onSubmit, goToLogin}) => {
 
     return (
         <Container>
-            <Input onChangeText={setEmail} keyboardType="email-address" placeholder="Email" />
-            <Input onChangeText={setPassword} secureTextEntry placeholder="Password" />
+            <Input onChangeText={setEmail} keyboardType="email-address" placeholder="Email"/>
+            <Input onChangeText={setPassword} secureTextEntry placeholder="Password"/>
             <Button onPress={handleSubmit}>
                 <Text>Register</Text>
             </Button>

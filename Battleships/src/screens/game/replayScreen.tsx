@@ -1,11 +1,12 @@
-import { Text } from 'react-native'
+import {Text} from 'react-native'
 import styled from "styled-components/native";
 import Table from "../../components/table";
 import React, {useEffect, useState} from "react";
 import {useAuth} from "../../hooks/authContext";
 import {useRoute} from "@react-navigation/native";
-import {Game, Move, useGameContext} from "../../hooks/gameContext";
+import {Game} from "../../hooks/gameContext";
 import {getUser, loadGame} from "../../api";
+import TextCard from "../../components/card";
 
 const Container = styled.SafeAreaView`
     display: flex;
@@ -28,10 +29,17 @@ const ReplayScreen = () => {
     const auth = useAuth();
     const route = useRoute<any>();
 
-    const [myGrid, setMyGrid] = useState<Array<Array<string | number>>>(Array.from({ length: 10 }, () => Array(10).fill(0)));
-    const [oppGrid, setOppGrid] = useState<Array<Array<string | number>>>(Array.from({ length: 10 }, () => Array(10).fill(0)));
+    const [myGrid, setMyGrid] = useState<Array<Array<string | number>>>(Array.from({length: 10}, () => Array(10).fill(0)));
+    const [oppGrid, setOppGrid] = useState<Array<Array<string | number>>>(Array.from({length: 10}, () => Array(10).fill(0)));
     const [game, setGame] = useState<Game>()
-    const [user, setUser] = useState<any>({ user: { id: '', email: '' }, gamesPlayed: 0, gamesLost: 0, gamesWon: 0, currentlyGamesPlaying: 0 });
+    const [user, setUser] = useState<any>({
+        user: {id: '', email: ''},
+        gamesPlayed: 0,
+        gamesLost: 0,
+        gamesWon: 0,
+        currentlyGamesPlaying: 0
+    });
+    const [showMessage, setShowMessage] = useState(false); // State to control visibility of message
 
     useEffect(() => {
         loadGame(auth.token, route.params.gameId).then(setGame);
@@ -39,17 +47,18 @@ const ReplayScreen = () => {
     }, []);
 
     const handleReplay = async () => {
-        if (game?.moves){
+        if (game?.moves) {
             for (let i = 0; i < game.moves.length; i++) {
                 const xIndex = game.moves[i].x.charCodeAt(0) - 'A'.charCodeAt(0);
                 const yIndex = game.moves[i].y - 1;
                 const updatedGrid = game.moves[i].playerId === user.user.id ? [...oppGrid] : [...myGrid];
-                updatedGrid[yIndex][xIndex] = game.moves[i].result ? 'X' : '-';
+                if (typeof updatedGrid[yIndex][xIndex] === 'number')
+                    updatedGrid[yIndex][xIndex] = game.moves[i].result ? 'X' : '-';
                 game.moves[i].playerId === user.user.id ? setOppGrid(updatedGrid) : setMyGrid(updatedGrid);
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise(resolve => setTimeout(resolve, 500));
             }
+            setShowMessage(true);
         }
-
     };
 
     return (
@@ -60,9 +69,21 @@ const ReplayScreen = () => {
             <Text>Opponent's map</Text>
             <Table grid={oppGrid}></Table>
 
-            <Button onPress={handleReplay}>
-                <Text>Replay</Text>
-            </Button>
+            {showMessage ?
+                (game?.playerToMoveId === user.user.id ? (
+                    <TextCard
+                        text={"You lost!"}
+                    />
+                ) : (
+                    <TextCard
+                        text={"You won!"}
+                    />
+                )) : (
+                    <Button onPress={handleReplay}>
+                        <Text>Replay</Text>
+                    </Button>
+                )
+            }
         </Container>
     )
 }

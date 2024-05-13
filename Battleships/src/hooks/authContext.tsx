@@ -12,9 +12,12 @@ interface IAuthContext {
 
 const AuthContext = createContext<IAuthContext>({
     token: '',
-    login: async () => {},
-    register: async () => {},
-    logout: async () => {},
+    login: async () => {
+    },
+    register: async () => {
+    },
+    logout: async () => {
+    },
     isLoading: false
 })
 

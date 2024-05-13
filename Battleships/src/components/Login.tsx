@@ -34,8 +34,8 @@ const Login: React.FC<ILogin> = ({onSubmit, goToRegister}) => {
 
     return (
         <Container>
-            <Input onChangeText={setEmail} keyboardType={'email-address'} />
-            <Input onChangeText={setPassword} secureTextEntry />
+            <Input onChangeText={setEmail} keyboardType={'email-address'}/>
+            <Input onChangeText={setPassword} secureTextEntry/>
             <Button onPress={handleSubmit}>
                 <Text>Log in</Text>
             </Button>

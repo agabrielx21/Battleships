@@ -76,9 +76,9 @@ const ConfigScreen = () => {
             const updatedGrid = [...grid];
             for (let i = 0; i < currentShip.size!; i++) {
                 if (currentShip.direction === "VERTICAL") {
-                    updatedGrid[currentShip.y! + i - 1][currentShip.x!.charCodeAt(0) - 65] = ships.length + 1;
+                    updatedGrid[currentShip.y! + i - 1][currentShip.x!.charCodeAt(0) - 65] = 1;
                 } else {
-                    updatedGrid[currentShip.y! - 1][currentShip.x!.charCodeAt(0) - 65 + i] = ships.length + 1;
+                    updatedGrid[currentShip.y! - 1][currentShip.x!.charCodeAt(0) - 65 + i] = 1;
                 }
             }
             setGrid(updatedGrid);
@@ -104,7 +104,7 @@ const ConfigScreen = () => {
 
     useEffect(() => {
         gameContext.loadGame(route.params.gameId);
-    }, [gameContext.game]);
+    }, []);
 
     return (
         <ScrollView>

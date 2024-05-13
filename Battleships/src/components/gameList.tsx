@@ -1,5 +1,5 @@
 import React from 'react';
-import GameListItem, { IGameListItem } from './gameListItem';
+import GameListItem, {IGameListItem} from './gameListItem';
 import styled from "styled-components/native";
 
 const Container = styled.ScrollView`
@@ -12,13 +12,13 @@ const Container = styled.ScrollView`
 `
 
 // @ts-ignore
-const GameList = ({games, filterFunction, navigation, goTo }) => (
+const GameList = ({games, filterFunction, navigation, goTo}) => (
     <Container>
         {games.filter(filterFunction).map((game: React.JSX.IntrinsicAttributes & IGameListItem) => (
             <GameListItem
                 key={game.id}
                 {...game}
-                onPress={() => navigation.navigate(goTo, { gameId: game.id })}
+                onPress={() => navigation.navigate(goTo, {gameId: game.id})}
             />
         ))}
     </Container>

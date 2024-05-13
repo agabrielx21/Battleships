@@ -1,4 +1,12 @@
 import {View, Text} from "react-native";
+import styled from "styled-components/native";
+
+const Container = styled.View`
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+`
 
 const getCellColor = (cell: string | number) => {
     switch (cell) {
@@ -17,26 +25,29 @@ const getCellColor = (cell: string | number) => {
 
 // @ts-ignore
 const Grid = ({grid}) => (
-    <>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={{width: 20}}></Text>
+    <Container>
+        <View style={{flexDirection: 'row'}}>
+            <Text style={{width: 20, textAlign: 'center'}}></Text>
             {Array.from({length: 10}, (_, index) => (
-                <Text key={index} style={{width: 20, textAlign: 'center'}}>{String.fromCharCode(65 + index)}</Text>
+                <Text key={index} style={{width: 20, margin: 2}}>{String.fromCharCode(65 + index)}</Text>
             ))}
         </View>
         {grid.map((row: string[] | number[], rowIndex: number) => (
-            <View key={rowIndex} style={{ flexDirection: 'row' }}>
-                <Text style={{ width: 20, textAlign: 'center' }}>{rowIndex + 1}</Text>
+            <View key={rowIndex} style={{flexDirection: 'row'}}>
+                <Text style={{width: 20, textAlign: 'center'}}>{rowIndex + 1}</Text>
                 {row.map((cell, colIndex) => (
-                    <View key={colIndex} style={{ width: 20, height: 20, backgroundColor: getCellColor(cell), justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ color: '#FFFFFF' }}>
-                            {typeof cell === 'number' ? (cell === 1 ? 1 : 0) : cell}
-                        </Text>
-                    </View>
+                    <View key={colIndex} style={{
+                        width: 20,
+                        height: 20,
+                        backgroundColor: getCellColor(cell),
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        margin: 2
+                    }}/>
                 ))}
             </View>
         ))}
-    </>
+    </Container>
 );
 
 export default Grid;
